@@ -8,6 +8,8 @@ import sys
 import optparse
 import select
 import logging
+import termios
+import tty
 from io import StringIO
 
 from .cellsize import get_size
@@ -22,6 +24,21 @@ def _filenize(f):
         return StringIO(f.read())
     return f
 
+def is_term_sixel_capable():
+    """based on `printf "\\033[c"`; returns if the current terminal emulator is capable of SIXEL"""
+    # import sys, termios, tty
+    if os.getenv("TERM", '').strip().startswith("yaft"):
+        return True
+
+    print("\033[c", end="", flush=True)
+    fd = sys.stdin.fileno()
+    orig = termios.tcgetattr(fd)
+
+    try:
+        tty.setcbreak(fd)  # or tty.setraw(fd) if you prefer raw mode's behavior.
+        return '4' in sys.stdin.read(10).split(";")
+    finally:
+        termios.tcsetattr(fd, termios.TCSAFLUSH, orig)
 
 def main():
     parser = optparse.OptionParser()
