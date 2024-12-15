@@ -36,7 +36,7 @@ def is_term_sixel_capable():
 
     try:
         tty.setcbreak(fd)  # or tty.setraw(fd) if you prefer raw mode's behavior.
-        return '4' in sys.stdin.read(10).split(";")
+        return '4' in sys.stdin.read(10)
     finally:
         termios.tcsetattr(fd, termios.TCSAFLUSH, orig)
 
