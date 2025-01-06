@@ -7,7 +7,7 @@ import logging
 import sys
 from pathlib import Path
 import argparse
-from sixel import converter
+from sixel import converter, is_term_sixel_capable
 
 
 def main():
@@ -25,4 +25,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if is_term_sixel_capable():
+        main()
+    else:
+        raise EnvironmentError("Your current terminal emulator does not support SIXEL!")
